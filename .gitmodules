@@ -1,0 +1,3 @@
+[submodule "starDust2"]
+	path = starDust2
+	url = https://github.com/davecoulter/starDust2.git
