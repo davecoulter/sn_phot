@@ -1,2 +1,4 @@
 ._*
 jades_phot/*.txt
+!jades_phot/example_phot.txt
+!jades_phot/example_redshifts.txt
