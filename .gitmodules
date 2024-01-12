@@ -1,3 +1,6 @@
 [submodule "starDust2"]
 	path = starDust2
 	url = https://github.com/davecoulter/starDust2.git
+[submodule "sntd"]
+	path = sntd
+	url = https://github.com/jpierel14/sntd.git
