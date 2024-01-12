@@ -3,15 +3,15 @@ import numpy as np
 import sncosmo
 from astropy.table import Table
 import os,shutil,glob,sys
-# from sn import BAYESNSource
 import sntd
 from sntd.models import BAYESNSource
-from classify import *
 import corner
 from astropy.cosmology import LambdaCDM
 import pdb
 from stardust import classify
 import pickle
+
+import pdb
 
 cosmo = LambdaCDM(Om0=0.3, Ode0=0.7, H0=70.0)
 
@@ -20,28 +20,36 @@ do_classify = True
 input_path = "./jades_phot"
 output_path = "./fit_output"
 
-# input_files = glob.glob("./jades_phot/*_sncosmo_phot.txt")
-input_files = glob.glob("{input_path}/tr10_sncosmo_phot.txt".format(input_path=input_path))
-z_file = Table.read("{input_path}/JADES_Sources1_Redshifts.txt".format(input_path=input_path), format='ascii')
+# input_files = glob.glob("{input_path}/tr10_sncosmo_phot.txt".format(input_path=input_path))
+input_files = glob.glob("{input_path}/*_sncosmo_phot.txt".format(input_path=input_path))
+z_Table = Table.read("{input_path}/JADES_Sources1_Redshifts.txt".format(input_path=input_path), format='ascii')
 
 for f in input_files:
-
+    
     # book keeping
     file_name = os.path.basename(f)
-    pickle_file = f.replace("txt", "pkl")
+    pickle_file = file_name.replace("txt", "pkl")
     pickle_path = "{output_path}/{pickle_file}".format(output_path=output_path, pickle_file=pickle_file)
 
-    lc_plot_file = f.replace("txt", "png")
+    lc_plot_file = file_name.replace("txt", "png")
     lc_plot_path = "{output_path}/{lc_plot_file}".format(output_path=output_path, lc_plot_file=lc_plot_file)
 
-    corner_plot_file = f.replace("txt", "corner.png")
+    corner_plot_file = file_name.replace("txt", "corner.png")
     corner_plot_path = "{output_path}/{corner_plot_file}".format(output_path=output_path, corner_plot_file=corner_plot_file)
-
 
     lc = Table.read(f,format='ascii')
     lc = lc[~np.isnan(lc['flux'])]
-
     t0 = (np.min(lc['mjd'])-100, np.max(lc['mjd'])+100)
+
+
+    snid = file_name.split("_")[0]
+    ind = np.where(z_Table['ID']==snid)[0]
+    if len(ind)==0:
+        continue
+    z_median = float(z_Table['z50'][ind])
+    z_lower = float(z_Table['z16'][ind])
+    z_upper = float(z_Table['z84'][ind])
+
 
     # def classify(sn, zhost=1.491, zhosterr=0.003, t0_range=None,
     #              zminmax=[1.488,1.493], npoints=100, maxiter=10000,
@@ -52,7 +60,10 @@ for f in input_files:
 
     output = None 
     if do_classify:
-        output = classify.classify(lc, zhost=3.6, zhosterr=0.001, t0_range=t0, zminmax=[3.599,3.601])        
+
+        # pdb.set_trace()
+
+        output = classify.classify(lc, zhost=z_median, zhosterr=(z_upper-z_lower)/2., t0_range=t0, zminmax=[z_lower, z_upper])        
         pickle.dump(output, open(pickle_path, "wb"))
     else:
         output = pickle.load(open(pickle_path, "rb"))
