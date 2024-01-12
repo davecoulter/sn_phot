@@ -3,7 +3,9 @@ import numpy as np
 import sncosmo
 from astropy.table import Table
 import os,shutil,glob,sys
-from models import BAYESNSource
+# from sn import BAYESNSource
+import sntd
+from sntd.models import BAYESNSource
 from classify import *
 import corner
 from astropy.cosmology import LambdaCDM
