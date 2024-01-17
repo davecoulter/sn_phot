@@ -3,7 +3,7 @@ jades_phot/*.txt
 !jades_phot/readme.txt
 !jades_phot/example_phot.txt
 !jades_phot/example_redshifts.txt
-!fit_output/*.txt
-!fit_output/*.png
+!fit_output/readme.txt
+fit_output/*.png
 !fit_output/readme.txt
 *.pkl
